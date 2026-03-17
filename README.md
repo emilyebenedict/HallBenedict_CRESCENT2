@@ -20,7 +20,7 @@ Available data is found in supplementary tables.
 * RAxML v8.2.12
 
 ### R scripts: package versions used
-* R v4.4.2 and v4.5.0
+* R v4.3.0
 * RStudio v2024.12.1+563
 * readxl v1.4.3
 * dplyr v1.2.0
