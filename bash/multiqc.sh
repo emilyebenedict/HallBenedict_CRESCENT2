@@ -4,10 +4,6 @@
 # Name         : s02_multiqc.sh
 # Description  : Consolidates output from s01_fastqc.sh
 # Usage        : sbatch s02_multiqc.sh
-# Author       : Luke Diorio-Toth, ldiorio-toth@wustl.edu
-# Version      : 1.4
-# Created On   : 2019_01_08
-# Modified On  : Thu Jun  8 14:53:16 CDT 2023
 #===============================================================================
 
 #Submission script for HTCF
