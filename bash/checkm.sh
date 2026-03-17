@@ -2,7 +2,7 @@
 
 #===============================================================================
 # Name         : s06_checkm.sh
-# Description  : This script will run checkm on a unicycler output dir
+# Description  : This script will run checkm on a spades output dir
 # Usage        : sbatch s06_checkm.sh
 #===============================================================================
 
