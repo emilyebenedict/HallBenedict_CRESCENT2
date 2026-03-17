@@ -19,6 +19,7 @@ Available data is found in supplementary tables.
 * Panaroo v1.2.10
 * RAxML v8.2.12
 * MLST v2.22.1
+* snp-dists v0.8.2
 
 ### R scripts: package versions used
 * R v4.3.0
