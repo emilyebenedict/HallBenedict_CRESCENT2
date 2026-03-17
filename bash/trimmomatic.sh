@@ -5,10 +5,6 @@
 # Description  : Trims adapter sequences and low-quality bases from illumina
 #              : reads, producing a "cleaned" set of paried reads
 # Usage        : sbatch s00_trimmomatic.sh
-# Author       : Luke Diorio-Toth, ldiorio-toth@wustl.edu
-# Version      : 1.3
-# Created On   : 2019_01_08
-# Modified On  : Mon Jun 27 10:54:26 CDT 2022
 #===============================================================================
 
 #SBATCH --job-name=trimmomatic
