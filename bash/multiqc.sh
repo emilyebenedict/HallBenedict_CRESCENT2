@@ -16,7 +16,7 @@
 #SBATCH --output=slurm_out/multiqc/z_multiqc_%A.out
 #SBATCH --error=slurm_out/multiqc/z_multiqc_%A.out
 
-eval $( spack load --sh py-multiqc )
+eval $( spack load --sh py-multiqc@1.27 )
 
 basedir="$PWD"
 indir="${basedir}/d02_read_qc"
