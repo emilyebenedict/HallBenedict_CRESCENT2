@@ -2,9 +2,6 @@
 #===============================================================================
 # File Name    : spades.sh
 # Usage        : sbatch spades.sh
-# Author       : Lindsey Hall
-# Version      : 1.0
-# Created On   : 23-05-08
 #===============================================================================
 #Submission script for HTCF
 #SBATCH --job-name=spades
