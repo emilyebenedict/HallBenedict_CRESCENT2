@@ -28,7 +28,6 @@ Available data is found in supplementary tables.
 * dplyr v1.2.0
 * ggplot2 4.0.2
 * ggpubr v0.6.3
-* phyloseq v1.50.0
 * NatParksPalettes v0.2.0
 * tidyverse v2.0.0
 * reshape2 v1.4.4
@@ -38,6 +37,5 @@ Available data is found in supplementary tables.
 * pheatmap 1.0.12
 * tidytree 0.4.6
 * ggnewscale 0.5.0
-* qgraph v1.9.8
-* scales v1.3.0
-* plyr v1.8.9
+* igraph v2.1.4
+* ggprism v1.0.7
