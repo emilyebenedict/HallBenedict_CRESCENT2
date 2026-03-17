@@ -3,7 +3,6 @@
 # Name         : s15_bbmap.sh
 # Description  : This script will run bbmap to estimate coverage for an assembly
 # Usage        : sbatch s15_bbmap.sh
-# Modified On  : 2023-04-28 by Emily Benedict
 #===============================================================================
 #
 #Submission script for HTCF
