@@ -18,6 +18,7 @@ Available data is found in supplementary tables.
 * Prokka v1.14.6
 * Panaroo v1.2.10
 * RAxML v8.2.12
+* MLST v2.22.1
 
 ### R scripts: package versions used
 * R v4.3.0
