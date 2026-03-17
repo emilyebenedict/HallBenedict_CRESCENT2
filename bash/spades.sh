@@ -13,8 +13,7 @@
 #SBATCH --mem=40G
 #SBATCH --output=slurm_out/spades/x_spades_%a.out
 #SBATCH --error=slurm_out/spades/y_spades_%a.err
-#SBATCH --mail-type=END
-#SBATCH --mail-user=ebenedict@wustl.edu
+
 
 eval $(spack load --sh spades@3.15.3)
 
