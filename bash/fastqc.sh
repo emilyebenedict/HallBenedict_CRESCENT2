@@ -3,10 +3,6 @@
 # Name         : s01_fastqc.sh
 # Description  : Runs basic QC on raw and trimmed illumina reads
 # Usage        : sbatch s00_fastQC.sh
-# Author       : Luke Diorio-Toth, ldiorio-toth@wustl.edu
-# Version      : 1.4
-# Created On   : 2019_01_08
-# Modified On  : Mon Jun 27 13:06:20 CDT 2022
 #===============================================================================
 #
 #Submission script for HTCF
