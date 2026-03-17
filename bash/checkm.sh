@@ -4,10 +4,6 @@
 # Name         : s06_checkm.sh
 # Description  : This script will run checkm on a unicycler output dir
 # Usage        : sbatch s06_checkm.sh
-# Author       : Luke Diorio-Toth, ldiorio-toth@wustl.edu
-# Version      : 1.6
-# Created On   : Sat Aug 22 12:52:49 CDT 2020
-# Last Modified: Thu Jul 14 14:36:01 CDT 2022
 #===============================================================================
 
 #SBATCH --time=1-00:00:00 # days-hh:mm:ss
