@@ -22,20 +22,28 @@ Available data is found in supplementary tables.
 * snp-dists v0.8.2
 
 ### R scripts: package versions used
-* R v4.3.0
-* RStudio v2024.12.1+563
-* readxl v1.4.3
-* dplyr v1.2.0
-* ggplot2 4.0.2
-* ggpubr v0.6.3
-* NatParksPalettes v0.2.0
-* tidyverse v2.0.0
-* reshape2 v1.4.4
-* RColorBrewer v1.1-3
-* phytools 2.3-0
-* ggtree 3.12.0
-* pheatmap 1.0.12
-* tidytree 0.4.6
-* ggnewscale 0.5.0
-* igraph v2.1.4
-* ggprism v1.0.7
+*ComplexUpset v1.3.6
+*data.table v1.18.2.1
+*dplyr v1.2.0
+*ggplot2 v4.0.2
+*ggprism v1.0.7 / v1.0.7.9000
+*ggpubr v0.6.3
+*ggnewscale v0.5.0
+*ggtree v3.12.0
+*igraph v2.1.4
+*lubridate v1.9.5
+*NatParksPalettes v0.2.0
+*pheatmap v1.0.12
+*phytools v2.3-0
+*R v4.3.0 / v4.5.2
+*RColorBrewer v1.1-3
+*readr v2.2.0
+*readxl v1.4.3 / v1.4.5
+*reshape2 v1.4.4
+*RStudio v2024.12.1+563 / v2026.1.0.392
+*stringr v1.6.0
+*tidyr v1.3.2
+*tidytree v0.4.6
+*tidyverse v2.0.0
+*UpSetR v1.4.0
+*writexl v1.5.4
