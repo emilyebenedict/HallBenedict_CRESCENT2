@@ -1,0 +1,441 @@
+---
+title: "CRESCENT Figures 1c, 3a, 3c, S3, S6"
+output: html_notebook
+editor_options: 
+  chunk_output_type: console
+---
+
+#Dataframes, libraries
+```{r}
+library(NatParksPalettes)
+library(ggplot2)
+library(dplyr)
+library(tidyr)
+library(readxl)
+library(hrbrthemes)
+library(viridis)
+library(tidyverse)
+library(data.table)
+library(stringr)
+library(ggprism)
+library(ggpubr)
+library(ape)
+library(vegan)
+library(readr)
+library(pheatmap)
+library(reshape2)
+library(RColorBrewer)
+library(qqman)
+library(writexl)
+library(UpSetR)
+library(lubridate)
+
+
+colors <- c(
+  "Patient" = "#D76E9A",
+  "Sink" = "#A1ACC8",
+  "hosp_discharge" = "#2F397A",
+  "icu_admit" = "#7391BD",
+  "icu_discharge" = "#894846",
+  "sink_drain" = "#E9988C",
+  "sink_surface" = "#535260",
+  "no" = "#894846",
+  "yes" = "#E9988C",
+  "1" = "#8C2B0E",
+  "2" = "#A6471C",
+  "3" = "#C0642A",
+  "4" = "#DA853D",
+  "5" = "#F5A752",
+  "6" = "#B58A59",
+  "7" = "#494D5A",
+  "8" = "#1E3A67",
+  "9" = "#34507F",
+  "10" = "#485A85",
+  "11" = "#594D67",
+  "14" = "#6D4752",
+  "15" = "#90626A",
+  "none" = "#B47E83",
+  "Enterobacter species" = "#A6CEE3",
+  "Enterobacter chengduensis" = "#A6CEE3",
+  "Enterobacter cloacae" = "#1F78B4",
+  "Enterobacter cloacae subsp. cloacae" = "#B2DF8A",
+  "Enterobacter hormaechei" = "#33A02C",
+  "Enterobacter roggenkampii" = "#FB9A99",
+  "Enterobacter sichuanensis" = "#E31A1C",
+  "Escherichia coli" = "#FDBF6F",
+  "Escherichia coli K-12" = "#FF7F00",
+  "Klebsiella aerogenes" = "#CAB2D6",
+  "Klebsiella pneumoniae" = "#6A3D9A",
+  "Klebsiella pneumoniae subsp. pneumoniae" = "#FFFF99",
+  "Klebsiella quasipneumoniae" = "#B15928",
+  "Klebsiella sp. 10982" = "grey85", 
+  "Enterobacter" = "#1F78B4", 
+  "Klebsiella" = "#6A3D9A",
+  "Escherichia" = "#FDBF6F", 
+  "Hospital-acquired" = "#BBD8B3", 
+  "Healthcare-associated" = "#F3B61F", 
+  "Community-associated" = "#F1EF93",
+   "Hospital acquired" = "#BBD8B3", 
+  "Healthcare associated" = "#F3B61F", 
+  "Community" = "#F1EF93",
+  "Environmental Swab" = "#64A253", 
+    "Environmental swab" = "#64A253",
+  "External isolate" = "#919191", 
+  "CRESCENT" = "#E9988C", 
+  "Undetermined" = "#919191", 
+  "Negative for CRE" = "#ebeae8", 
+  "S" = "#8FCAFD",  "SDD" = "#4499F5", "I" = "#CD622E", "R" =  "#832B0F"
+)
+
+
+formatted_date <- format(Sys.Date(), "%y%m%d")
+
+script_dir <- dirname(rstudioapi::getActiveDocumentContext()$path)
+setwd(script_dir)
+
+
+amrfinder <- read_excel("../data/CRESCENT_amrfinder_results.xlsx", sheet = "CRESCENT_amrfinder_results")
+
+# Filter rows where Element type is "AMR"
+amrfinder <- amrfinder %>%
+  filter(`Element type` == "AMR")
+
+metadata <- read_excel("../data/250424_WGSIDs-to-keep_LRH.xlsx", sheet = "metadata_new")
+plasmidfinder <- read_excel("../data/241015_Plasmidfinder-results_LRH.xlsx", sheet = "241015_Plasmidfinder-results_LR")
+
+metadata$Sample <- gsub("[.-]", "_", metadata$Sample)
+amrfinder$Name <- gsub("[.-]", "_", amrfinder$Name)
+
+ metadata <- metadata %>%
+  separate(Mash, into = c("genus", "species"), sep = " ", extra = "merge", remove = FALSE)
+
+metadata <- metadata %>%
+  mutate(Mash = case_when(
+    Mash == "Klebsiella pneumoniae subsp. pneumoniae" ~ "Klebsiella pneumoniae",
+    Mash == "Enterobacter cloacae subsp. cloacae" ~ "Enterobacter cloacae",
+    Mash == "Escherichia coli K-12" ~ "Escherichia coli",
+    TRUE ~ Mash
+  ))
+
+amrfinder <- amrfinder %>%
+  filter(!grepl("Name", Name))
+
+amrfinder_metadata <- amrfinder %>%
+  inner_join(metadata, by = c("Name" = "Sample"))
+
+amrfinder_metadata_plasmid <- amrfinder_metadata %>%
+  left_join(plasmidfinder, by = c("Contig id" = "Contig"))
+
+length(unique(amrfinder_metadata_plasmid$Name.x))
+
+metadata$Sample <- gsub("[.-]", "_", metadata$Sample)
+
+date_acquisition <- read_excel("../data/241101_CRESCENT-Original_data.xlsx", sheet="dates")
+  
+AST_patient <- read_xlsx("/Users/lindseyhall/Library/CloudStorage/Box-Box/Crescent/manuscript/Supplemental_Tables/250424/250326_SupplementalX-AST_LRH.xlsx", sheet = "Patient isolates AST")
+
+AST_environmental <- read_xlsx("/Users/lindseyhall/Library/CloudStorage/Box-Box/Crescent/manuscript/Supplemental_Tables/250424/250326_SupplementalX-AST_LRH.xlsx", sheet = "Environmental isolates AST")
+
+# addition from eeb - updated swab results
+updated_swabs = data.frame(read_excel('../manuscript/Supplemental_Tables/250908_supplemental_tables_SG/250812_SupplementalTable1-SwabResults_LRH_SG_8.30.25.xlsx'))
+
+EX_amrfinder <- read_tsv("../data/241216_samples_and_other_amrfinder_compiled_LRH.tsv")
+EX_metadata <- read_csv("../data/241216_CRESCENT_pt_mash_mlst_ani.csv") 
+
+```
+
+#Figure 1c
+```{r}
+#---------------------TIMELINE---------------------
+data <- date_acquisition
+
+setdiff(updated_swabs$Study_id, data$study_id2)
+
+updated_swabs = updated_swabs[,c("Study_id","Swabs.result"), drop = F]
+colnames(updated_swabs)[1] = "study_id2"
+updated_swabs = updated_swabs[updated_swabs$study_id2 %in% data$study_id2,]
+
+data = full_join(data, updated_swabs)
+
+# Replace spaces with underscores in the column names
+colnames(data) <- gsub(" ", "_", colnames(data))
+
+data$hospital_admit <- as.Date(data$hospital_admit, format="%m/%d/%y")
+
+data_long <- data %>%
+  pivot_longer(cols = c(Orgaism1_name),  
+               names_to = "organism_type",  
+               values_to = "organism_name") %>%
+  mutate(week_start = floor_date(hospital_admit, "week"), 
+         year = year(hospital_admit)) 
+
+# Replace "ECOLI?" with "Undetermined" and "KP10982" with "Klebsiella pneumoniae"
+data_long <- data_long %>%
+  mutate(organism_name = case_when(
+    organism_name == "ECOLI? KPNE?" ~ "Undetermined",  
+    organism_name == "KP10982" ~ "Klebsiella pneumoniae",  
+    TRUE ~ organism_name
+  ))
+
+
+data_long$Swabs.result[data_long$Swabs.result != "Negative on admission and did not acquire CRE during hospital stay" & 
+                         data_long$Swabs.result != "CRE positive on admission to SICU" & 
+                         data_long$Swabs.result != "CRE acqusition on SICU discharge" &
+                         data_long$Swabs.result != "CRE acquisition on hospital discharge"] = "Lost to attrition"
+
+data_count <- data_long %>%
+  group_by(week_start, year, Swabs.result) %>%
+  summarise(study_id_count = n_distinct(study_id2), .groups = 'drop')
+
+
+ggplot(data_count, aes(x = week_start, y = study_id_count, fill = Swabs.result)) +
+  geom_bar(stat = "identity") +
+  labs(x = "Date of Hospital Admission", y = "Number of Enrollments", fill = "Patient Swab Result") +
+  theme_prism() + 
+  scale_fill_manual(values = c(natparks.pals("Yellowstone", 4),'grey80'), 
+                    breaks = c("CRE acquisition on hospital discharge","CRE acqusition on SICU discharge",
+                               "CRE positive on admission to SICU","Negative on admission and did not acquire CRE during hospital stay",
+                               "Lost to attrition")) +
+  theme(axis.text.x = element_text(angle = 90)) 
+
+```
+
+
+#Figure 3a
+```{r}
+#---------------------ARG BURDEN---------------------
+# Count the number of AMR genes per Sample
+amr_gene_count <- amrfinder_metadata %>%
+  group_by(Name) %>%
+  summarize(AMR_gene_count = n()) %>%
+  ungroup()
+
+amr_gene_count <- metadata %>%
+  left_join(amr_gene_count, by = c("Sample" = "Name"))
+
+amr_gene_count <- amr_gene_count[amr_gene_count$Category != "External isolate", ]
+amr_gene_count <- amr_gene_count[!is.na(amr_gene_count$Category), ]
+
+
+Category_comparisons <- combn(unique(amr_gene_count$Category), 2, simplify = FALSE)
+
+ggplot(amr_gene_count, aes(x = Category, y = AMR_gene_count)) +
+  geom_violin(aes(fill = Category), alpha = 0.2) +
+  geom_boxplot(aes(fill = Category), alpha = 0.6) +
+  geom_jitter(width = 0.2, size = 1.5, alpha = 0.4, color = "black") +  
+  stat_compare_means(
+  comparisons = Category_comparisons,
+  method = "wilcox.test",
+  p.adjust.method = "bonferroni",
+  label = "p.signif",       # Show significance stars
+  hide.ns = TRUE  , 
+  size = 6# Hide non-significant comparisons
+)+
+
+  theme_prism() +
+  theme(legend.position = "none")+
+  ylim(0, 50) +  # Set y-axis limits from 0 to 50
+  labs(
+    title = "ARG Burden per Isolation Source",
+    x = "Isolation Source",
+    y = "ARG Burden"
+  ) +
+  scale_fill_manual(values = colors) +
+  scale_x_discrete(labels = c(
+    "Community" = "CA",
+    "Environmental swab" = "E",
+    "Healthcare associated" = "HCA",
+    "Hospital acquired" = "HA"
+  ))
+
+```
+
+
+#Figure 3c
+```{r}
+#---------------------UPSET---------------------
+amrfinder_metadata_carbapenems <- amrfinder_metadata %>% 
+  filter(Subclass == "CARBAPENEM")
+
+genes <- unique(amrfinder_metadata_carbapenems$`Gene symbol`)
+names <- unique(amrfinder_metadata_carbapenems$Name)
+presence_absence_df <- data.frame(Name.X = names)
+for (gene in genes) {
+  presence_absence_df[[gene]] <- 0
+}
+for (i in 1:nrow(amrfinder_metadata_carbapenems)) {
+  name <- amrfinder_metadata_carbapenems$Name[i]
+  gene <- amrfinder_metadata_carbapenems$`Gene symbol`[i]
+  presence_absence_df[presence_absence_df$Name == name, gene] <- 1
+}
+classes = colnames(presence_absence_df[-1])
+
+presence_absence_df_with_metadata <- presence_absence_df %>%
+  inner_join(metadata, by = c("Name.X" = "Sample"))
+
+
+color_legend <- setNames(names(colors), names(colors))  # Original color names
+
+upset(presence_absence_df_with_metadata, 
+      classes, 
+      name = 'Antibiotic Class',  
+      base_annotations = list(
+        'Number of Isolates' = intersection_size(
+          counts = FALSE, 
+          mapping = aes(fill = Category)
+        ) + 
+          scale_fill_manual(values = colors, 
+                            breaks = names(colors), 
+                            labels = color_legend) + 
+          facet_grid(genus ~ .) +
+          theme_prism() +
+          theme(
+            strip.text.y  = element_text(angle = 0),
+            axis.text.x   = element_blank(),
+            axis.ticks.x  = element_blank()
+          )
+      ), 
+      width_ratio  = 0.2, 
+      height_ratio = 0.2, 
+      set_sizes = (
+        upset_set_size() +
+          theme_prism() +
+          theme(
+            axis.text.x  = element_text(angle = 90, hjust = 1),
+            axis.ticks.x = element_line()
+          ) +
+          ylab('') +
+          xlab('')
+      ),
+      themes = upset_modify_themes(list(
+        'intersections_matrix' = theme_prism(),
+        'overall_sizes'        = theme_prism()
+      ))
+)
+```
+
+
+#Figure S3
+```{r}
+#---------------------AST---------------------
+
+AST_merged <- bind_rows(AST_patient, AST_environmental)
+AST_merged$`WGS ID`<- gsub("[-_]", "", AST_merged$`WGS ID`)
+
+
+
+metadata <- metadata %>% filter(`Keep?` == "Y")
+metadata$Sample <- gsub("[-_]", "", metadata$Sample)
+
+
+AST_merged <- AST_merged %>% left_join(metadata, by = c("WGS ID" = "Sample"))
+AST_merged <- AST_merged %>% filter(`Keep?` == "Y")
+
+interp_cols <- grep("_Interpretation$", colnames(AST_merged), value = TRUE)
+
+
+
+ast_long <- AST_merged %>%
+  select(`CRESCENT ID`, `WGS ID`, `Organism`, `Location`, any_of("Category"), all_of(interp_cols)) %>%
+  pivot_longer(cols = all_of(interp_cols),
+               names_to = "Antibiotic",
+               values_to = "Interpretation") %>%
+  mutate(Antibiotic = gsub("_Interpretation$", "", Antibiotic))
+
+ast_long <- ast_long %>%
+  mutate(across(where(is.character), ~ gsub("\\*", "", .)))
+
+ast_long <- ast_long %>%
+  mutate(Interpretation = gsub("SSD", "SDD", Interpretation))
+
+
+ast_long_perc <- ast_long %>%
+  group_by(Antibiotic, Category) %>%
+  count(Interpretation) %>%
+  mutate(percent = n / sum(n) * 100) %>%
+  ungroup()
+
+ggplot(ast_long_perc, aes(x = Antibiotic, y = percent, fill = Interpretation)) +
+  geom_col(position = position_stack()) +
+  facet_wrap(~Category) +
+  labs(
+    x = "Antibiotic",
+    y = "Percentage of Isolates"
+  ) +
+  theme_prism() +
+  theme(
+    plot.title = element_text(size = 16, face = "bold", hjust = 0.5),
+    plot.subtitle = element_text(size = 14, hjust = 0.5),  
+    axis.text.x = element_text(angle = 90, hjust = 1),
+    strip.text = element_text(size = 9)
+  ) +
+  scale_fill_manual(values = colors) +
+  scale_y_continuous(labels = scales::percent_format(scale = 1))
+```
+
+
+
+#Figure S6
+```{r}
+#---------------------EXTERNAL ISOLATES---------------------
+
+EX_amrfinder <- EX_amrfinder %>%
+  filter(`Element type` == "AMR")
+
+
+
+EX_metadata$Sample <- gsub("[.-]", "_", EX_metadata$Sample)
+EX_amrfinder$Name <- gsub("[.-]", "_", EX_amrfinder$Name)
+
+ EX_metadata <- EX_metadata %>%
+  separate(Mash, into = c("genus", "species"), sep = " ", extra = "merge", remove = FALSE)
+
+EX_metadata <- EX_metadata %>%
+  mutate(Mash = case_when(
+    Mash == "Klebsiella pneumoniae subsp. pneumoniae" ~ "Klebsiella pneumoniae",
+    Mash == "Enterobacter cloacae subsp. cloacae" ~ "Enterobacter cloacae",
+    Mash == "Escherichia coli K-12" ~ "Escherichia coli",
+    TRUE ~ Mash
+  ))
+
+EX_amrfinder <- EX_amrfinder %>%
+  filter(!grepl("Name", Name))
+
+EX_amrfinder_EX_metadata <- EX_amrfinder %>%
+  inner_join(EX_metadata, by = c("Name" = "Sample"))
+
+EX_metadata$Sample <- gsub("[.-]", "_", EX_metadata$Sample)
+
+amr_gene_count <- EX_amrfinder_EX_metadata %>%
+  group_by(Name) %>%
+  summarize(AMR_gene_count = n()) %>%
+  ungroup()
+
+amr_gene_count <- EX_metadata %>%
+  left_join(amr_gene_count, by = c("Sample" = "Name"))
+
+Category_comparisons <- combn(unique(amr_gene_count$Category), 2, simplify = FALSE)
+
+ggplot(amr_gene_count, aes(x = Category, y = AMR_gene_count)) +
+geom_violin(aes(fill = Category), alpha = 0.2) +
+    geom_boxplot(aes(fill = Category), alpha = 0.6)+
+  geom_jitter(width = 0.2, size = 1.5, alpha = 0.4, color = "black") +  
+  stat_compare_means(comparisons = Category_comparisons, method = "wilcox.test", p.adjust.method = "bonferroni", hide.ns = TRUE) +  
+  facet_wrap(~ genus) + 
+  theme_prism() +
+  ylim(0, 50) + 
+  labs(
+    title = "ARG Burden per Isolation Source",
+    x = "Isolation Source",
+    y = "ARG Burden"
+  ) +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
+  scale_fill_manual(values = colors)
+
+
+
+
+
+
+```
+
