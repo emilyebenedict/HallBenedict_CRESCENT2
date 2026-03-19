@@ -26,7 +26,7 @@ Available data is found in supplementary tables.
 * data.table v1.18.2.1
 * dplyr v1.2.0
 * ggplot2 v4.0.2
-* ggprism v1.0.7 / v1.0.7.9000
+* ggprism v1.0.7 / v1.0.7.9
 * ggpubr v0.6.3
 * ggnewscale v0.5.0
 * ggtree v3.12.0
