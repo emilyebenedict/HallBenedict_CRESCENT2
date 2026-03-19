@@ -31,6 +31,7 @@ Available data is found in supplementary tables.
 * ggnewscale v0.5.0
 * ggtree v3.12.0
 * igraph v2.1.4
+* janitor v2.2.1
 * lubridate v1.9.5
 * NatParksPalettes v0.2.0
 * pheatmap v1.0.12
