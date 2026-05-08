@@ -48,3 +48,7 @@ Available data is found in supplementary tables.
 * tidyverse v2.0.0
 * UpSetR v1.4.0
 * writexl v1.5.4
+
+
+### To cite this repository, please use the following: 
+Hall LR, Benedict EE. Carbapenemase-producing carbapenem-resistant Enterobacterales in surgical intensive care unit patients in a tertiary hospital in India. Hall Benedict et al. 2026. doi: 10.5281/zenodo/20052
